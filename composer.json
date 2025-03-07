@@ -1,15 +1,9 @@
 {
     "name": "rdnz/annotation-tags",
-    "version": "dev-master",
+    "version": "dev-main",
     "autoload": {
       "psr-4": {
          "Biigle\\Modules\\AnnotationTags\\": "src"
       }
-    },
-    "repositories": {
-        "annotation-tags": {
-            "type": "vcs",
-            "url": "/Users/robin/DEV/annotation-tags"
-        }
     }
 }
