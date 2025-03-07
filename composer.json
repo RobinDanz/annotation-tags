@@ -1,6 +1,6 @@
 {
     "name": "rdnz/annotation-tags",
-    "version": "dev-main",
+    "version": "dev-master",
     "autoload": {
       "psr-4": {
          "Biigle\\Modules\\AnnotationTags\\": "src"

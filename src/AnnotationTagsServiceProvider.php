@@ -20,13 +20,6 @@ class AnnotationTagsServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'annotation-tags');
 
-        $router->group([
-            'namespace' => 'Biigle\Modules\Module\Http\Controllers',
-            'middleware' => 'web',
-        ], function ($router) {
-            require __DIR__.'/Http/routes.php';
-        });
-
         $modules->register('annotation-tags', [
             'viewMixins' => [
                 'dashboardMain',
