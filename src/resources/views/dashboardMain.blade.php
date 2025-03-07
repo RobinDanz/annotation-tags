@@ -4,7 +4,7 @@
    </div>
    <div class="panel-body">
       <blockquote>
-         {{ Illuminate\Foundation\Inspiring::quote() }}
+         coucou
       </blockquote>
    </div>
 </div>

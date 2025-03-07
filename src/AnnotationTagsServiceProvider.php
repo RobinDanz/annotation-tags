@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Module;
+namespace Biigle\Modules\AnnotationTags;
 
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
-class ModuleServiceProvider extends ServiceProvider
+class AnnotationTagsServiceProvider extends ServiceProvider
 {
 
    /**
@@ -18,7 +18,7 @@ class ModuleServiceProvider extends ServiceProvider
    */
     public function boot(Modules $modules, Router $router)
     {
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'module');
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'annotation-tags');
 
         $router->group([
             'namespace' => 'Biigle\Modules\Module\Http\Controllers',
@@ -27,7 +27,7 @@ class ModuleServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->register('module', [
+        $modules->register('annotation-tags', [
             'viewMixins' => [
                 'dashboardMain',
             ],
@@ -40,7 +40,7 @@ class ModuleServiceProvider extends ServiceProvider
         ]);
 
         $this->publishes([
-            __DIR__.'/public/assets' => public_path('vendor/module'),
+            __DIR__.'/public/assets' => public_path('vendor/annotation-tags'),
         ], 'public');
     }
 
