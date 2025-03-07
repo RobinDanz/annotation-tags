@@ -8,15 +8,18 @@ export default {
         };
     },
     methods: {
-        refreshQuote() {
-            this.$http.get('quotes/new').then(this.handleResponse, handleErrorResponse);
-        },
-        handleResponse(response) {
-            this.quote = response.body;
-        },
-    },
-    created() {
-        this.refreshQuote();
-    },
+        test() {
+            alert('abcd')
+        }
+    }
 };
 </script>
+
+<template>
+   <div>
+      <blockquote>
+         Test 123
+      </blockquote>
+      <button class="btn btn-default" v-on:click="test">refresh</button>
+   </div>
+</template>

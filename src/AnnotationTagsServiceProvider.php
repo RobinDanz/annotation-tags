@@ -22,14 +22,8 @@ class AnnotationTagsServiceProvider extends ServiceProvider
 
         $modules->register('annotation-tags', [
             'viewMixins' => [
-                'dashboardMain',
-            ],
-            'controllerMixins' => [
-                //
-            ],
-            'apidoc' => [
-               //__DIR__.'/Http/Controllers/Api/',
-            ],
+                'annotationsAnnotationsTab',
+            ]
         ]);
 
         $this->publishes([
