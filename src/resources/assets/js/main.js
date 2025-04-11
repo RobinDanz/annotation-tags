@@ -1,4 +1,5 @@
-import Quotes from './quotes';
-console.log('hello');
-Vue.component('quotes', Quotes);
+import TagsContainer from './TagsContainer.vue';
+
+
+Vue.component('tags', TagsContainer);
 

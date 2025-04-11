@@ -17,8 +17,16 @@ class AnnotationTagsServiceProvider extends ServiceProvider
    * @return  void
    */
     public function boot(Modules $modules, Router $router)
-    {
+    {   
+        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
         $this->loadViewsFrom(__DIR__.'/resources/views', 'annotation-tags');
+
+        $router->group([
+            'namespace' => 'Biigle\Modules\AnnotationTags\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
 
         $modules->register('annotation-tags', [
             'viewMixins' => [
