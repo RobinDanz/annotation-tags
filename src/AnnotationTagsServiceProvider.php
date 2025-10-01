@@ -31,12 +31,32 @@ class AnnotationTagsServiceProvider extends ServiceProvider
         $modules->register('annotation-tags', [
             'viewMixins' => [
                 'annotationsAnnotationsTab',
+                'dashboardButtons',
+                'projectsShowTabs',
             ]
         ]);
 
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/annotation-tags'),
         ], 'public');
+
+        // $tagReportDisks = [
+        //     'tag_report_tmp' => [
+        //         'driver' => 'local',
+        //         'root'   => storage_path('tag_report/tmp'),
+        //     ],
+        //     'tag_report' => [
+        //         'driver' => 'local',
+        //         'root'   => storage_path('tag_report/out'),
+        //     ]
+        // ];
+
+        // config([
+        //     'filesystems.disks' => array_merge(
+        //         config('filesystems.disks', []),
+        //         $tagReportDisks
+        //     )
+        // ]);
     }
 
     /**
@@ -46,6 +66,6 @@ class AnnotationTagsServiceProvider extends ServiceProvider
     */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(__DIR__.'/config/annotation_tags.php', 'annotation_tags');
     }
 }
