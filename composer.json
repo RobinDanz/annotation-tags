@@ -7,8 +7,5 @@
          "Biigle\\Services\\Reports\\Projects\\ImageAnnotations\\": "src/Service/Reports/Projects/",
          "Biigle\\Services\\Reports\\Volumes\\ImageAnnotations\\": "src/Service/Reports/Volumes/"
       }
-    },
-    "require": {
-        "twbs/bootstrap": "*"
     }
 }
