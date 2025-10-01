@@ -4,8 +4,8 @@
     "autoload": {
       "psr-4": {
          "Biigle\\Modules\\AnnotationTags\\": "src",
-         "Biigle\\Services\\Reports\\Projects\\ImageAnnotations": "src/Service/Reports/Projects/",
-         "Biigle\\Services\\Reports\\Volumes\\ImageAnnotations": "src/Service/Reports/Volumes/"
+         "Biigle\\Services\\Reports\\Projects\\ImageAnnotations\\": "src/Service/Reports/Projects/",
+         "Biigle\\Services\\Reports\\Volumes\\ImageAnnotations\\": "src/Service/Reports/Volumes/"
       }
     },
     "require": {
