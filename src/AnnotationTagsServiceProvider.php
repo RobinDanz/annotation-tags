@@ -39,24 +39,6 @@ class AnnotationTagsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/annotation-tags'),
         ], 'public');
-
-        // $tagReportDisks = [
-        //     'tag_report_tmp' => [
-        //         'driver' => 'local',
-        //         'root'   => storage_path('tag_report/tmp'),
-        //     ],
-        //     'tag_report' => [
-        //         'driver' => 'local',
-        //         'root'   => storage_path('tag_report/out'),
-        //     ]
-        // ];
-
-        // config([
-        //     'filesystems.disks' => array_merge(
-        //         config('filesystems.disks', []),
-        //         $tagReportDisks
-        //     )
-        // ]);
     }
 
     /**
@@ -66,6 +48,9 @@ class AnnotationTagsServiceProvider extends ServiceProvider
     */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/config/annotation_tags.php', 'annotation_tags');
+        // $this->mergeConfigFrom(__DIR__.'/config/annotation_tags.php', 'reports');
+        $scripts = config('reports.scripts', []);
+        $scripts['to_coco_with_tags'] = __DIR__.'/resources/scripts/to_coco_with_tags.py';
+        config(['reports.scripts' => $scripts]);
     }
 }

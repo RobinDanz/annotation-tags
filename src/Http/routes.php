@@ -7,7 +7,7 @@ $router->group([
 ], function ($router) {
     $router->get('tags', [
         'as' => 'tags',
-        'uses' => 'TagsController@index'
+        'uses' => 'TagsController@show'
     ]);
     $router->post('tags', [
         'as' => 'tags.create',
@@ -37,12 +37,13 @@ $router->group([
         'as' => 'tags.annotation',
         'uses' => 'TagsController@detach'
     ]);
-    $router->post('tags/test', [
-        'as' => 'tags.test',
-        'uses' => 'TagsController@test'
+    $router->put('tags/annotation/{annotation_id}', [
+        'as' => 'tags.annotation',
+        'uses' => 'TagsController@updateTag'
     ]);
-    $router->post('tags/{id}/reports', [
-        'uses' => 'TagsController@test2',
+    $router->post('tags/import', [
+        'as' => 'tags.import',
+        'uses' => 'TagsController@importTags'
     ]);
 });
 

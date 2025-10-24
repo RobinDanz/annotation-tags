@@ -24,8 +24,12 @@ export default Vue.resource('api/v1/tags', {}, {
         method: 'DELETE',
         url: 'api/v1/tags/annotation/{id}',
     },
-    createReport: {
+    updateTag: {
+        method: 'PUT',
+        url: 'api/v1/tags/annotation/{id}'
+    },
+    importTags: {
         method: 'POST',
-        url: 'api/v1/tags/test',
+        url: 'api/v1/tags/import',
     }
 });

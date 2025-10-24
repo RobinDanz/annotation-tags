@@ -1,7 +1,6 @@
 import TagsMultiSelect from './TagsMultiSelect.vue';
 import TagsContainer from './TagsContainer.vue';
 import Vue from 'vue'
-import projectReportsApi from './api/projectReports';
 
 const PARENT_SELECTOR = '.annotations-tab-item__sub-item'
 const INJECTION_KEY = '__child_injected__'
@@ -19,8 +18,6 @@ function injectIntoParent(parentInstance) {
   parentInstance.$el.appendChild(childInstance.$el)
 
   parentInstance[INJECTION_KEY] = childInstance
-
-  console.log('Injected in:', parentInstance)
 }
 
 function scanAndInject() {

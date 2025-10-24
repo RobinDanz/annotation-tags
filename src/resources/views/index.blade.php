@@ -25,8 +25,8 @@
                     <tab title="New Tag">
                         <tag-form v-on:submit="createTag"></tag-form>
                     </tab>
-                    <tab title="Report">
-                        <tag-report></tag-report>
+                    <tab title="Import">
+                        <tag-import v-on:refresh="refresh"></tag-import>
                     </tab>
                 </tabs>
             </div>

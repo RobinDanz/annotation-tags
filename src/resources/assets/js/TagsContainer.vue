@@ -1,7 +1,7 @@
 <script>
 import TagItem from './TagItem';
 import TagForm from './TagForm';
-import TagReport from './TagReport.vue';
+import TagImport from './TagImport.vue';
 import TagApi from './api/tags'
 import { LoaderMixin, handleErrorResponse, Tabs, Tab } from './import'
 
@@ -20,7 +20,7 @@ export default {
     components: {
         tagItem: TagItem,
         tagForm: TagForm,
-        tagReport: TagReport,
+        tagImport: TagImport,
         tabs: Tabs,
         tab: Tab,
     },
@@ -73,10 +73,10 @@ export default {
             // If the function didn't return by now the tag is "smaller" than all
             // the other tags.
             this.tags.push(tag);
+        },
+        refresh() {
+            console.log('refresh tags');
         }
-    },
-    watch: {
-
     },
     created() {
         this.tags = biigle.$require('tagsDisplay.tags');

@@ -2,12 +2,8 @@
 
 namespace Biigle\Services\Reports\Projects\ImageAnnotations;
 
-use Biigle\Services\Reports\Volumes\ImageAnnotations\CocoReportGenerator as ReportGenerator;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\CocoWithTagsReportGenerator as ReportGenerator;
 
-use Biigle\LabelTree;
-use Biigle\Services\Reports\CsvFile;
-use Biigle\Services\Reports\MakesZipArchives;
-use Biigle\User;
 
 use DB;
 

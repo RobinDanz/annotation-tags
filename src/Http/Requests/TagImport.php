@@ -4,7 +4,7 @@ namespace Biigle\Modules\AnnotationTags\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagReport extends FormRequest
+class TagImport extends FormRequest
 {
 
     /**
@@ -28,8 +28,8 @@ class TagReport extends FormRequest
             'file' => [
                 'required',
                 'file',
-                'max:50000000',
-                'mimetypes:text/plain,application/json',
+                'max:2048',
+                'mimetypes:text/plain',
             ],
         ];
     }

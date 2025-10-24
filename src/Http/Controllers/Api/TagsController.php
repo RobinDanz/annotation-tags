@@ -3,90 +3,42 @@
 namespace Biigle\Modules\AnnotationTags\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-
-use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\AnnotationTags\Tag;
 use Biigle\Modules\AnnotationTags\Http\Requests\UpdateTag;
-use Biigle\Modules\AnnotationTags\Http\Requests\TagReport;
-use Biigle\Modules\AnnotationTags\Jobs\TestJob;
+use Biigle\Modules\AnnotationTags\Http\Requests\TagImport;
 
-use Biigle\Http\Requests\StoreProjectReport;
-use Biigle\Report;
+use DB;
+use Throwable;
 
 class TagsController extends Controller
 {
-
-    /**
-     * Shows the quotes page.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function show()
     {
         $tags = Tag::all();
         return response()->json($tags);
     }
 
-    public function test2(StoreProjectReport $request, $id)
-    {
-        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-        $output->writeln($request->input('type_id'));
-        $report = new Report;
-        $report->source()->associate($request->project);
-        $report->type_id = $request->input('type_id');
-        $report->user()->associate($request->user());
-        $report->options = $request->getOptions();
-        // $report->save();
-
-        // $queue = config('reports.generate_report_queue');
-        //GenerateReportJob::dispatch($report)->onQueue($queue);
-
-        if ($this->isAutomatedRequest()) {
-            return $report;
-        }
-    }
-
-    public function test(TagReport $request)
-    {   
-        
-
-        $file = $request->file(key: 'file');
-        $content = file_get_contents($file->getRealPath());
-
-        $js = json_decode($content, true);
-
-        if(json_last_error() !== JSON_ERROR_NONE) {
-            return response()->json(['error' => 'Invalid JSON'], 400);
-        }
-
-        $tags = Tag::with(['annotations' => function ($query) {
-            $query->select('image_annotation_id');
-        }])->get()->toArray();
-        
-        TestJob::dispatch($js, $tags)->onQueue(config('annotation_tags.annotation_tags_queue'));
-
-        return response()->json([]);
-    }
-
     public function store(Request $request)
-    {
-        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-
+    {        
         $tag = new Tag();
         $tag->name = $request->input('name');
         $tag->color = $request->input('color');
         $tag->save();
-        $output->writeln('Tag created: ' . $tag->name);
         return response()->json($tag, 201);
     }
 
     public function annotation($annotation_id)
     {
-        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
         $tags = Tag::whereHas('annotations', function ($query) use ($annotation_id) {
             $query->where('image_annotation_id', $annotation_id);
-        })->get();
-        $output->writeln($tags->count());
+        })
+        ->get()
+        ->map(function ($tag) use ($annotation_id) {
+            $annotation = $tag->annotations()->where('image_annotation_id', $annotation_id)->first();
+            $tag->pivot = $annotation ? $annotation->pivot->value : null;
+            return $tag;
+        });
         return response()->json($tags);
     }
 
@@ -94,12 +46,12 @@ class TagsController extends Controller
     {
         $tag = Tag::find($request->input('tag_id'));
         
-        
         if (!$tag) {
             return response()->json(['error' => 'Tag not found'], 404);
         }
 
-        $tag->annotations()->attach($annotation_id, ['value' => 0]);
+        $tag->annotations()->attach($annotation_id, ['value' => null]);
+
         return response()->json(['message' => 'Tag attached successfully']);
     }
 
@@ -111,9 +63,19 @@ class TagsController extends Controller
             return response()->json(['error' => 'Tag not found'], 404);
         }
 
-
         $tag->annotations()->detach($annotation_id);
         return response()->json(['message' => 'Tag detached successfully']);
+    }
+
+    public function updateTag(Request $request, $annotation_id)
+    {
+        $tag = Tag::findOrFail($request->input('tag_id'));
+
+        $tag->annotations()->syncWithoutDetaching([
+            $annotation_id => ['value' => $request->input('value')],
+        ]);
+
+        return response()->json(['message' => 'Value updated successfully']);
     }
 
     public function destroy($id)
@@ -137,5 +99,53 @@ class TagsController extends Controller
         $tag->save();
 
         return response()->json($tag);
+    }
+
+    public function importTags(TagImport $request) {
+        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+        $file = $request->file(key: 'file');
+        $content = file($file->getRealPath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        $tags = array_map(function ($line) {
+            $line = trim($line);
+            return filter_var($line, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        }, $content);
+
+        $tags = array_unique($tags);
+        
+        if (empty($tags)) {
+            return response()->json(['message' => 'Nothin to import']);
+        }
+
+        try {
+            DB::transaction(function() use ($tags) {
+                $existing = Tag::whereIn('name', $tags)->pluck('name')->toArray();
+
+                $newTags = array_diff($tags, $existing);
+
+                if (empty($newTags)) {
+                    return;
+                }
+
+                $now = now();
+
+                $insertData = array_map(fn($name) => [
+                    'name' => $name,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                    'color' => $this->randomRgbCode()
+                ], $newTags);
+                
+                Tag::insert($insertData);
+            });
+        } catch (Throwable $e) {
+            return response()->json(['error' => 'Error during tag import'], 500);
+        }
+
+        return response()->json(['message' => 'Import success']);
+    }
+
+    private function randomRgbCode(): string {
+        return sprintf('%02x%02x%02x', rand(0, 255), rand(0, 255), rand(0, 255));
     }
 }

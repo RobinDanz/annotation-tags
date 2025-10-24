@@ -1,16 +1,20 @@
 <template>
-    <form >
-        <input type="file" name="annotation" v-on:change="handleFile">
-        <button @click="createReport">Click !</button>
-    </form>
+    <div class="form-group">
+        <label>Select a file</label>
+        <input type="file" name="import" v-on:change="handleFile">
+        <span class="help-block">
+            The file must be a textfile with a tags separated by newline
+        </span>
+        <button class="btn btn-success" @click="importTags" :disabled="!data">Click !</button>
+    </div>
 </template>
 
 <script>
 import TagApi from './api/tags'
-import { LoaderMixin, handleErrorResponse } from './import'
+import { LoaderMixin } from './import'
 
 /**
- * A component to handle tag report generation
+ * A component to handle tag import
  *
  * @type {Object}
  */
@@ -19,16 +23,15 @@ export default {
     data() {
         return {
             error: false,
-            success: false
+            success: false,
+            data: null
         }
-    },
-    computed: {
-
     },
     methods: {
         handleSuccess() {
             this.error = false;
             this.success = true;
+            this.$emit('refresh');
         },
         handleError(response) {
             this.success = false;
@@ -45,17 +48,21 @@ export default {
         },
         handleFile(event) {
             this.startLoading();
-            console.log(event);
-            let data = new FormData();
-            data.append('file', event.target.files[0]);
-            console.log(data);
-            TagApi.createReport(data)
+
+            this.data = event.target.files[0]
+            console.log(this.data);
+        },
+        handleFinally() {
+            this.data = null;
+            this.finishLoading();
+        },
+        importTags() {
+            let formData = new FormData();
+            formData.append('file', this.data);
+            TagApi.importTags(formData)
                 .then(this.handleSuccess)
                 .catch(this.handleError)
-                .finally(this.finishLoading);
-        },
-        createReport() {
-            TagApi.createReport({}).then(console.log, handleErrorResponse);
+                .finally(this.handleFinally);
         }
     },
 };

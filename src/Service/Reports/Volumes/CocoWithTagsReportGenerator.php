@@ -6,6 +6,7 @@ use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\User;
+
 use DB;
 
 class CocoWithTagsReportGenerator extends CocoReportGenerator
@@ -16,14 +17,14 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
      *
      * @var string
      */
-    public $name = 'coco image annotation report';
+    public $name = 'coco with tags image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    public $filename = 'coco_image_annotation_report';
+    public $filename = 'coco_with_tags_image_annotation_report';
 
     /**
      * File extension of the report file.
@@ -39,7 +40,23 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        $rows = $this->query()->get()->groupBy('annotation_label_id')->map(function($items) {
+            $annotation = $items->first();
+            // $tagData = $items->pluck(value: 'tag_value', key: 'tag_name');
+            // if ($tagData->keys()->first() == "") {
+            //     $tagData = [];
+            // }
+
+            $tagData = $items->mapWithKeys(function($i) {
+                return $i->tag_name ? [$i->tag_name => $i->tag_value] : [];
+            });
+
+            $annotation->tags = $tagData;
+            return $annotation;
+        });
+
+        dump($rows);
+
         $toZip = [];
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
@@ -65,9 +82,10 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
         } else {
             $csv = $this->createCsv($rows);
             $this->tmpFiles[] = $csv;
-            $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
+
+            $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');            
         }
-        $this->executeScript('to_coco', ''); // the temporary csv files are overwritten with the respective json files therefore the argument is not needed
+        $this->executeScript('to_coco_with_tags', ''); // the temporary csv files are overwritten with the respective json files therefore the argument is not needed
         $this->makeZip($toZip, $path);
     }
 
@@ -91,8 +109,12 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
                 'shapes.name as shape_name',
                 'image_annotations.points',
                 'images.attrs',
+                'annotations_tags.value as tag_value',
+                'tags.name as tag_name'
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
+            ->leftJoin('annotations_tags', 'image_annotations.id', '=', 'annotations_tags.image_annotation_id')
+            ->leftJoin('tags', 'annotations_tags.tag_id', '=', 'tags.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -120,6 +142,7 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
             'shape_name',
             'points',
             'attributes',
+            'tags',
         ]);
 
         foreach ($rows as $row) {
@@ -134,6 +157,7 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
                 $row->shape_name,
                 $row->points,
                 $row->attrs,
+                $row->tags
             ]);
         }
 
