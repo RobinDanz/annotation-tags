@@ -30,15 +30,15 @@ $router->group([
         'uses' => 'TagsController@annotation'
     ]);
     $router->post('tags/annotation/{annotation_id}', [
-        'as' => 'tags.annotation',
+        'as' => 'tags.annotation.create',
         'uses' => 'TagsController@attach'
     ]);
     $router->delete('tags/annotation/{annotation_id}', [
-        'as' => 'tags.annotation',
+        'as' => 'tags.annotation.destroy',
         'uses' => 'TagsController@detach'
     ]);
     $router->put('tags/annotation/{annotation_id}', [
-        'as' => 'tags.annotation',
+        'as' => 'tags.annotation.update',
         'uses' => 'TagsController@updateTag'
     ]);
     $router->post('tags/import', [

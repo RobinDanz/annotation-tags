@@ -42,10 +42,6 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
     {
         $rows = $this->query()->get()->groupBy('annotation_label_id')->map(function($items) {
             $annotation = $items->first();
-            // $tagData = $items->pluck(value: 'tag_value', key: 'tag_name');
-            // if ($tagData->keys()->first() == "") {
-            //     $tagData = [];
-            // }
 
             $tagData = $items->mapWithKeys(function($i) {
                 return $i->tag_name ? [$i->tag_name => $i->tag_value] : [];
@@ -54,8 +50,6 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
             $annotation->tags = $tagData;
             return $annotation;
         });
-
-        dump($rows);
 
         $toZip = [];
 
