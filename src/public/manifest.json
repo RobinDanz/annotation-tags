@@ -1,11 +1,8 @@
 {
   "src/resources/assets/js/main.js": {
-    "file": "assets/main-C70xDRsh.js",
+    "file": "assets/main-DMVR-8YM.js",
     "name": "main",
     "src": "src/resources/assets/js/main.js",
-    "isEntry": true,
-    "css": [
-      "assets/main-HsumWn45.css"
-    ]
+    "isEntry": true
   }
 }
