@@ -1,6 +1,6 @@
 <script>
-import TagItem from './TagItem';
-import TagForm from './TagForm';
+import TagItem from './TagItem.vue';
+import TagForm from './TagForm.vue';
 import TagImport from './TagImport.vue';
 import TagApi from './api/tags'
 import { LoaderMixin, handleErrorResponse, Tabs, Tab } from './import'

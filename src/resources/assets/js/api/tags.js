@@ -1,9 +1,5 @@
-/**
- * Resource for tag requests.
- * 
- * @type {Vue.resource}
- */
-export default Vue.resource('api/v1/tags', {}, {
+import { Resource } from "../import";
+export default Resource('api/v1/tags', {}, {
     delete: {
         method: 'DELETE',
         url: 'api/v1/tags/{id}',

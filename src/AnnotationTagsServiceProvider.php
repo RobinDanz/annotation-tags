@@ -30,14 +30,14 @@ class AnnotationTagsServiceProvider extends ServiceProvider
 
         $modules->register('annotation-tags', [
             'viewMixins' => [
-                'annotationsAnnotationsTab',
+                // 'annotationsAnnotationsTab',
                 'dashboardButtons',
                 'projectsShowTabs',
             ]
         ]);
 
         $this->publishes([
-            __DIR__.'/public/assets' => public_path('vendor/annotation-tags'),
+            __DIR__.'/public' => public_path('vendor/annotation-tags'),
         ], 'public');
     }
 
@@ -52,5 +52,23 @@ class AnnotationTagsServiceProvider extends ServiceProvider
         $scripts = config('reports.scripts', []);
         $scripts['to_coco_with_tags'] = __DIR__.'/resources/scripts/to_coco_with_tags.py';
         config(['reports.scripts' => $scripts]);
+
+        $this->app->singleton('command.annotation-tags.publish', function ($app) {
+            return new \Biigle\Modules\AnnotationTags\Console\Commands\Publish();
+        });
+
+        $this->commands('command.annotation-tags.publish');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'command.annotation-tags.publish',
+        ];
     }
 }

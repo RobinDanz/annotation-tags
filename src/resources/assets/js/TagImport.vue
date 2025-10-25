@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import TagApi from './api/tags'
+import TagApi from './api/tags.js'
 import { LoaderMixin } from './import'
 
 /**
