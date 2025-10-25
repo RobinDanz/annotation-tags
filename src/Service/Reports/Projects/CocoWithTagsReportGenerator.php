@@ -30,4 +30,4 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
      */
     public $filename = 'coco_with_tags_image_annotation_report';
 
-    }
+}
