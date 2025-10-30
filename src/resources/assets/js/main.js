@@ -1,48 +1,46 @@
 import TagsMultiSelect from './TagsMultiSelect.vue';
 import TagsContainer from './TagsContainer.vue';
-// import Vue from 'vue'
+import { createApp } from 'vue';
 
-// const PARENT_SELECTOR = '.annotations-tab-item__sub-item'
-// const INJECTION_KEY = '__child_injected__'
+const PARENT_SELECTOR = '.annotations-tab-item__sub-item'
+const INJECTION_KEY = '__child_injected__'
 
-// function injectIntoParent(parentInstance) {
-//   if (parentInstance[INJECTION_KEY]) return
+function startInjectionObserver() {
+  scanAndInject();
 
-//   const ChildClass = Vue.extend(TagsMultiSelect)
-//   const childInstance = new ChildClass({
-//     parent: parentInstance,
-//     propsData: { }
-//   })
+  const observer = new MutationObserver(() => {
+    scanAndInject();
+  })
 
-//   childInstance.$mount()
-//   parentInstance.$el.appendChild(childInstance.$el)
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
+}
 
-//   parentInstance[INJECTION_KEY] = childInstance
-// }
+function inject(container) {
+    if (container[INJECTION_KEY]) return;
 
-// function scanAndInject() {
-//   const elements = document.querySelectorAll(PARENT_SELECTOR)
-//   for (const el of elements) {
-//     const parentInstance = el.__vue__
-//     if (parentInstance) {
-//       injectIntoParent(parentInstance)
-//     }
-//   }
-// }
+    const newEl = document.createElement('i');
+    newEl.style = 'float: right;'
+    container.appendChild(newEl);
 
-// function startInjectionObserver() {
-//   scanAndInject()
+    const props = {
+        annotationId: Number(container.dataset.annotationId)
+    }
 
-//   const observer = new MutationObserver(() => {
-//     scanAndInject()
-//   })
+    const app = createApp(TagsMultiSelect, props);
+    const vm = app.mount(newEl);
+    container[INJECTION_KEY] = true;
+}
 
-//   observer.observe(document.body, {
-//     childList: true,
-//     subtree: true
-//   })
-// }
+function scanAndInject() {
+    const elements = document.querySelectorAll(PARENT_SELECTOR);
+    for(const el of elements) {
+        inject(el);
+    }
+}
 
-// startInjectionObserver();
+window.startInjectionObserver = startInjectionObserver;
 
 biigle.$mount('tags-container', TagsContainer);

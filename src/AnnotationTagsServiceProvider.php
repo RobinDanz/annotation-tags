@@ -30,7 +30,7 @@ class AnnotationTagsServiceProvider extends ServiceProvider
 
         $modules->register('annotation-tags', [
             'viewMixins' => [
-                'annotationsAnnotationsTab',
+                'annotationsScripts',
                 'dashboardButtons',
                 'projectsShowTabs',
             ]

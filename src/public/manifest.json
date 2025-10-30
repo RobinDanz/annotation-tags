@@ -1,8 +1,11 @@
 {
   "src/resources/assets/js/main.js": {
-    "file": "assets/main-DMVR-8YM.js",
+    "file": "assets/main-BKIWNpDG.js",
     "name": "main",
     "src": "src/resources/assets/js/main.js",
-    "isEntry": true
+    "isEntry": true,
+    "css": [
+      "assets/main-BQAyTmHU.css"
+    ]
   }
 }

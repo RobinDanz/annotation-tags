@@ -8,6 +8,12 @@ export default {
     mixins: [
         LoaderMixin
     ],
+    props: {
+        annotationId: {
+            type: Number,
+            required: true,
+        }
+    },
     data() {
         return {
             isOpen: false,
@@ -50,47 +56,31 @@ export default {
         toggleSelection(option) {
             if (this.isSelected(option)) {
                 this.selectedOptions = this.selectedOptions.filter(o => o.id !== option.id)
-                this.detachTag(option); // Detach tags when deselected
+                this.detachTag(option);
             } else {
                 this.selectedOptions.push(option)
-                this.attachTag(option); // Attach tags when selected
+                this.attachTag(option);
             }
         },
         updateTagValue(option) {
             TagsApi.updateTag(
-                { id: this.$parent.annotation.id },
+                { id: this.annotationId },
                 {
                     tag_id: option.id,
                     value: option.value,
                 }
             )
             .then(resp => {
-                this.selectedOptions.push(option);
+                if(!this.isSelected(option)) {
+                    this.selectedOptions.push(option);
+                }
             })
             .catch(function (response) {
                 handleErrorResponse(response)
             });
         },
-        // addOption() {
-        //     const trimmed = this.newOption.trim()
-
-        //     TagsApi.save({
-        //         'name': trimmed,
-        //         'color': randomColor(),
-        //     }).then(resp => {
-        //         let tag = this.formatTag(resp.data);
-        //         if (trimmed && !this.options.some(o => o.id === tag.id)) {
-        //             this.options.push(tag);
-        //         }
-        //     }).catch(function (response) {
-        //         handleErrorResponse(response);
-        //     })
-        //     .finally(this.finishLoading);
-        //     this.newOption = ''
-        //     this.search = ''
-        // },
         getAnnotationTags() {
-            TagsApi.getAnnotation({ id: this.$parent.annotation.id }).then(resp => {
+            TagsApi.getAnnotation({ id: this.annotationId }).then(resp => {
                 for (let tag of resp.data) {
                     const formated = this.formatTag(tag);
                     this.selectedOptions.push(formated);
@@ -110,7 +100,7 @@ export default {
         },
         attachTag(option) {
             TagsApi.attachTag(
-                { id: this.$parent.annotation.id },
+                { id: this.annotationId },
                 { tag_id: option.id }
             ).catch(function (response) {
                 handleErrorResponse(response);
@@ -118,20 +108,12 @@ export default {
         },
         detachTag(option) {
             TagsApi.detachTag(
-                { id: this.$parent.annotation.id },
+                { id: this.annotationId },
                 { tag_id: option.id }
             )
             .then(resp => {
                 option.value = undefined;
             })
-            .catch(function (response) {
-                handleErrorResponse(response);
-            })
-        },
-        deleteTag(option) {
-            this.options = this.options.filter(o => o.id !== option.id);
-            this.selectedOptions = this.selectedOptions.filter(o => o.id !== option.id);
-            TagsApi.delete({ id: option.id })
             .catch(function (response) {
                 handleErrorResponse(response);
             })
@@ -143,6 +125,32 @@ export default {
                 value: tag.pivot,
             }
         },
+        // deleteTag(option) {
+        //     this.options = this.options.filter(o => o.id !== option.id);
+        //     this.selectedOptions = this.selectedOptions.filter(o => o.id !== option.id);
+        //     TagsApi.delete({ id: option.id })
+        //     .catch(function (response) {
+        //         handleErrorResponse(response);
+        //     })
+        // },
+        // addOption() {
+        //     const trimmed = this.newOption.trim()
+
+        //     TagsApi.save({
+        //         'name': trimmed,
+        //         'color': randomColor(),
+        //     }).then(resp => {
+        //         let tag = this.formatTag(resp.data);
+        //         if (trimmed && !this.options.some(o => o.id === tag.id)) {
+        //             this.options.push(tag);
+        //         }
+        //     }).catch(function (response) {
+        //         handleErrorResponse(response);
+        //     })
+        //     .finally(this.finishLoading);
+        //     this.newOption = ''
+        //     this.search = ''
+        // },
     },
     mounted() {
         this.getAllTags();
@@ -162,13 +170,13 @@ export default {
             <span class="caret"></span>
         </span>
         <div class="dropdown-menu">
-            <input v-model="search" class="form-control" type="text" placeholder="Rechercher..." />
+            <input v-model="search" class="form-control search" type="text" placeholder="Rechercher..." />
             <ul class="list-unstyled">
                 <li v-for="(option, index) in filteredOptions" :key="index">
                     <div class="checkbox">
-                        <label class="tag-selected">
-                            <input 
-                                type="checkbox" 
+                        <label class="tag" :title="option.name">
+                            <input
+                                type="checkbox"
                                 :checked="isSelected(option)"
                                 @change.prevent="toggleSelection(option)" 
                             >
@@ -197,6 +205,11 @@ export default {
 </template>
 
 <style scoped>
+.search {
+    width: 90%;
+    margin-right: auto;
+    margin-left: auto;
+}
 .checkbox {
     display: flex;
 }
@@ -208,27 +221,33 @@ export default {
 
 .dropdown-menu {
     position: absolute;
-    top: 100%;
-    left: -33px;
+    top: 20px;
+    left: -200px;
     z-index: 1000;
-    padding: 10px 3px 10px 10px;
-    padding-bottom: 3px;
-    width: 200px;
-    border-radius: 4px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 220px;
+    border-radius: 8px;
 }
 
 .list-unstyled {
-    margin: 10px 0px 3px 0px;
+    margin-top: 10px;
+    margin-left: 10px;
     max-height: 150px;
     overflow-y: auto;
 }
 
-.tag-value {
-    margin-left: 5px;
-    margin-right: 2px;
+.tag {
+    width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 5px;
 }
 
-.tag-selected {
-    margin: auto;
+.tag-value {
+    margin-right: 10px;
 }
 </style>

@@ -3,12 +3,17 @@
         <label>Select a file</label>
         <input type="file" name="import" v-on:change="handleFile">
         <span class="help-block">
-            The file must be a textfile with a tags separated by newline
+            The file must be a textfile with tags separated by newline
         </span>
-        <button class="btn btn-success" @click="importTags" :disabled="!data">Click !</button>
+        <button class="btn btn-success" @click="importTags" :disabled="!data">Import</button>
+        <p v-if="success" class="info bg-success text-success">
+            Tags successfully imported. Refresh the page.
+        </p>
+        <p v-if="error" class="info bg-danger text-danger">
+            There was an error importing the file.
+        </p>
     </div>
 </template>
-
 <script>
 import TagApi from './api/tags.js'
 import { LoaderMixin } from './import'
@@ -67,3 +72,14 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+
+.info {
+    margin-top: 10px;
+    padding: 10px;
+    width: 60%;
+    border-radius: 5px;
+}
+
+</style>
