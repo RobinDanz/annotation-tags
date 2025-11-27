@@ -1,46 +1,52 @@
-import TagsMultiSelect from './TagsMultiSelect.vue';
 import TagsContainer from './TagsContainer.vue';
-import { createApp } from 'vue';
+import './annotationsTabPlugins.js';
 
-const PARENT_SELECTOR = '.annotations-tab-item__sub-item'
-const INJECTION_KEY = '__child_injected__'
+// import TagsMultiSelect from './TagsMultiSelect.vue';
+// import { createApp } from 'vue';
 
-function startInjectionObserver() {
-  scanAndInject();
+// const PARENT_SELECTOR = '.annotations-tab-item__sub-item'
+// const INJECTION_KEY = '__child_injected__'
 
-  const observer = new MutationObserver(() => {
-    scanAndInject();
-  })
+// function startInjectionObserver() {
+//   scanAndInject();
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  })
-}
+//   const observer = new MutationObserver(() => {
+//     scanAndInject();
+//   })
 
-function inject(container) {
-    if (container[INJECTION_KEY]) return;
+//   observer.observe(document.body, {
+//     childList: true,
+//     subtree: true
+//   })
+// }
 
-    const newEl = document.createElement('i');
-    newEl.style = 'float: right;'
-    container.appendChild(newEl);
+// function inject(container) {
+//     if (container[INJECTION_KEY]) return;
 
-    const props = {
-        annotationId: Number(container.dataset.annotationId)
-    }
+//     const newEl = document.createElement('span');
+//     newEl.style = 'float: right; margin-right: 4px; margin-top: -4px;'
+//     container.appendChild(newEl);
 
-    const app = createApp(TagsMultiSelect, props);
-    const vm = app.mount(newEl);
-    container[INJECTION_KEY] = true;
-}
+//     console.log(container);
 
-function scanAndInject() {
-    const elements = document.querySelectorAll(PARENT_SELECTOR);
-    for(const el of elements) {
-        inject(el);
-    }
-}
+//     const props = {
+//         annotationId: Number(container.dataset.annotationId)
+//     }
 
-window.startInjectionObserver = startInjectionObserver;
+//     // app.provide()
+
+//     const app = createApp(TagsMultiSelect, props);
+//     const vm = app.mount(newEl);
+//     container[INJECTION_KEY] = true;
+// }
+
+// function scanAndInject() {
+//     const elements = document.querySelectorAll(PARENT_SELECTOR);
+//     for(const el of elements) {
+//         inject(el);
+//     }
+// }
+
+// window.startInjectionObserver = startInjectionObserver;
 
 biigle.$mount('tags-container', TagsContainer);

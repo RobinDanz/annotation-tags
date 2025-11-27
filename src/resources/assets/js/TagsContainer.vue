@@ -2,6 +2,7 @@
 import TagItem from './TagItem.vue';
 import TagForm from './TagForm.vue';
 import TagImport from './TagImport.vue';
+import TagRules from './TagRules.vue';
 import TagApi from './api/tags'
 import { LoaderMixin, handleErrorResponse, Tabs, Tab } from './import'
 
@@ -21,12 +22,13 @@ export default {
         tagItem: TagItem,
         tagForm: TagForm,
         tagImport: TagImport,
+        tagRules: TagRules,
         tabs: Tabs,
         tab: Tab,
     },
     methods: {
         saveTag(tag, reject) {
-            TagApi.update({ id: tag.id }, { name: tag.name, color: tag.color })
+            TagApi.update({ id: tag.id }, { name: tag.name, value: tag.value, color: tag.color, label_ids: tag.label_ids })
                 .catch(function (response) {
                     reject();
                     handleErrorResponse(response);
@@ -52,7 +54,6 @@ export default {
             if (this.loading) {
                 return;
             }
-            console.log(tag);
             this.startLoading();
             TagApi.save({}, tag)
                 .then(this.tagCreated, handleErrorResponse)
@@ -63,19 +64,23 @@ export default {
         },
         insertTag(tag) {
             let name = tag.name.toLowerCase();
-            // add the tag to the array so the tags remain sorted by their name
             for (let i = 0, length = this.tags.length; i < length; i++) {
                 if (this.tags[i].name.toLowerCase() >= name) {
                     this.tags.splice(i, 0, tag);
                     return;
                 }
             }
-            // If the function didn't return by now the tag is "smaller" than all
-            // the other tags.
             this.tags.push(tag);
         },
         refresh() {
-            console.log('refresh tags');
+            if (this.loading) {
+                return;
+            }
+            TagApi.query()
+                .then((response) => {
+                    this.tags = response.data;
+                }, handleErrorResponse)
+                .finally(this.finishLoading);
         }
     },
     created() {

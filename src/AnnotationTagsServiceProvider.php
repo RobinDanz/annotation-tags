@@ -33,6 +33,7 @@ class AnnotationTagsServiceProvider extends ServiceProvider
                 'annotationsScripts',
                 'dashboardButtons',
                 'projectsShowTabs',
+                'annotationsAnnotationsTab',
             ]
         ]);
 
@@ -48,7 +49,6 @@ class AnnotationTagsServiceProvider extends ServiceProvider
     */
     public function register()
     {
-        // $this->mergeConfigFrom(__DIR__.'/config/annotation_tags.php', 'reports');
         $scripts = config('reports.scripts', []);
         $scripts['to_coco_with_tags'] = __DIR__.'/resources/scripts/to_coco_with_tags.py';
         config(['reports.scripts' => $scripts]);

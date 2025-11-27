@@ -51,6 +51,8 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
             return $annotation;
         });
 
+        dump($rows);
+
         $toZip = [];
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
@@ -103,8 +105,8 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
                 'shapes.name as shape_name',
                 'image_annotations.points',
                 'images.attrs',
-                'annotations_tags.value as tag_value',
-                'tags.name as tag_name'
+                'tags.name as tag_name',
+                'tags.value as tag_value',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('annotations_tags', 'image_annotations.id', '=', 'annotations_tags.image_annotation_id')

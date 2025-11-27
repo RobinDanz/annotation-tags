@@ -25,25 +25,43 @@ $router->group([
         'as' => 'tags.update',
         'uses' => 'TagsController@update'
     ]);
-    $router->get('tags/annotation/{annotation_id}', [
+    $router->get('tags/annotations/{annotation_id}', [
         'as' => 'tags.annotation',
         'uses' => 'TagsController@annotation'
     ]);
-    $router->post('tags/annotation/{annotation_id}', [
-        'as' => 'tags.annotation.create',
-        'uses' => 'TagsController@attach'
-    ]);
-    $router->delete('tags/annotation/{annotation_id}', [
-        'as' => 'tags.annotation.destroy',
-        'uses' => 'TagsController@detach'
-    ]);
-    $router->put('tags/annotation/{annotation_id}', [
+    $router->post('tags/annotations/{annotation_id}', [
         'as' => 'tags.annotation.update',
-        'uses' => 'TagsController@updateTag'
+        'uses' => 'TagsController@updateRelation'
     ]);
+    // $router->post('tags/annotation/{annotation_id}', [
+    //     'as' => 'tags.annotation.create',
+    //     'uses' => 'TagsController@attach'
+    // ]);
+    // $router->delete('tags/annotation/{annotation_id}', [
+    //     'as' => 'tags.annotation.destroy',
+    //     'uses' => 'TagsController@detach'
+    // ]);
     $router->post('tags/import', [
         'as' => 'tags.import',
         'uses' => 'TagsController@importTags'
+    ]);
+
+    // Tag group routes
+    $router->get('tag-groups', [
+        'as' => 'tag-groups',
+        'uses' => 'TagGroupController@index'
+    ]);
+    $router->post('tag-groups', [
+        'as' => 'tag-groups.create',
+        'uses' => 'TagGroupController@store'
+    ]);
+    $router->delete('tag-groups/{id}', [
+        'as' => 'tag-groups.destroy',
+        'uses' => 'TagGroupController@destroy'
+    ]);
+    $router->put('tag-groups/{id}', [
+        'as' => 'tag-groups.update',
+        'uses' => 'TagGroupController@update'
     ]);
 });
 

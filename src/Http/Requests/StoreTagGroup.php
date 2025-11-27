@@ -4,9 +4,8 @@ namespace Biigle\Modules\AnnotationTags\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagImport extends FormRequest
+class StoreTagGroup extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -17,20 +16,12 @@ class TagImport extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules() 
     {
         return [
-            'file' => [
-                'required',
-                'file',
-                'max:2048',
-                'mimes:csv,txt',
-            ],
+            'name' => 'required|string|max:255',
+            'tags' => 'array',
+            'tags.*' => 'integer|exists:tags,id'
         ];
     }
 }

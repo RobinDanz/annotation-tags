@@ -34,7 +34,9 @@ class UpdateTag extends FormRequest
     {
         return [
             'name' => 'filled|min:2|max:512',
+            'value' => 'max:50',
             'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
+            'label_ids' => 'array',
         ];
     }
 }

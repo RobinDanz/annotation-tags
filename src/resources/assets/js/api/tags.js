@@ -10,20 +10,24 @@ export default Resource('api/v1/tags', {}, {
     },
     getAnnotation: {
         method: 'GET',
-        url: 'api/v1/tags/annotation/{id}',
+        url: 'api/v1/tags/annotations/{id}',
     },
-    attachTag: {
+    updateRelation: {
         method: 'POST',
-        url: 'api/v1/tags/annotation/{id}',
+        url: 'api/v1/tags/annotations/{id}',
     },
-    detachTag: {
-        method: 'DELETE',
-        url: 'api/v1/tags/annotation/{id}',
-    },
-    updateTag: {
-        method: 'PUT',
-        url: 'api/v1/tags/annotation/{id}'
-    },
+    // attachTag: {
+    //     method: 'POST',
+    //     url: 'api/v1/tags/annotation/{id}',
+    // },
+    // detachTag: {
+    //     method: 'DELETE',
+    //     url: 'api/v1/tags/annotation/{id}',
+    // },
+    // updateTag: {
+    //     method: 'PUT',
+    //     url: 'api/v1/tags/annotation/{id}'
+    // },
     importTags: {
         method: 'POST',
         url: 'api/v1/tags/import',

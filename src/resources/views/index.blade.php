@@ -2,6 +2,8 @@
     {{vite_hot(base_path('vendor/annotation-tags/hot'), ['src/resources/assets/js/main.js'], 'vendor/annotation-tags')}}
     <script type="module">
         biigle.$declare('tagsDisplay.tags', {!! $tags !!});
+        biigle.$declare('tagsDisplay.labels', {!! $labels !!});
+        biigle.$declare('tagsDisplay.groups', {!! $groups !!});
     </script>
 
 @endpush
@@ -12,7 +14,7 @@
     <div class="container" id="tags-container">
         <h2>Tags</h2>
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-7">
                 <div class="panel panel-default">
                     <ul class="label-tree__list">
                         <tag-item :key="tag.id" v-for="(tag, index) in tags" :tag="tag" v-on:save="saveTag"
@@ -20,13 +22,16 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-xs-6">
+            <div class="col-xs-5">
                 <tabs v-cloak>
                     <tab title="New Tag">
                         <tag-form v-on:submit="createTag"></tag-form>
                     </tab>
                     <tab title="Import">
                         <tag-import v-on:refresh="refresh"></tag-import>
+                    </tab>
+                    <tab title="Rules">
+                        <tag-rules :tags="tags" v-on:refresh="refresh"></tag-rules>
                     </tab>
                 </tabs>
             </div>

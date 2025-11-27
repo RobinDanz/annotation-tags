@@ -5,6 +5,15 @@
             <span v-if="editing">
                 <input type="color" class="form-control input-sm label-tree-color-input" v-model="newColor" />
                 <input type="text" v-model="newName" v-on:keydown.enter="saveThis" class="form-control input-sm label-tree-label__name-input">
+                <input type="text" v-model="newValue" v-on:keydown.enter="saveThis" class="form-control input-sm label-tree-label__name-input">
+                <multi-select
+                    size="sm"
+                    v-model="newAllowedLabels"
+                    :options="labelsOptions"
+                    selected-icon="fa fa-check"
+                    filterable
+                    collapse-selected
+                ></multi-select>
             </span>
             <span v-else>
                 <span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>
@@ -24,7 +33,7 @@
 </template>
 
 <script>
-import { randomColor } from './utils';
+import { MultiSelect } from 'uiv';
 
 /**
  * A component that displays a single tag.
@@ -33,14 +42,22 @@ import { randomColor } from './utils';
  */
 export default {
     name: 'tag-item',
+    components: {
+        multiSelect: MultiSelect
+    },
     data() {
         return {
             hover: false,
             editing: false,
+            oldValue: '',
             oldName: '',
             oldColor: '',
+            newValue: '',
             newName: '',
             newColor: '',
+            oldAllowedLabels: [],
+            newAllowedLabels: [],
+            labelsOptions: [],
         };
     },
     props: {
@@ -76,10 +93,15 @@ export default {
     methods: {
         editThis() {
             this.editing = true;
+            this.oldValue = this.tag.value;
             this.oldName = this.tag.name;
             this.oldColor = this.tag.color;
+            this.oldAllowedLabels = this.tag.label_ids;
+
+            this.newValue = this.tag.value;
             this.newName = this.tag.name;
             this.newColor = '#' + this.tag.color;
+            this.newAllowedLabels = this.tag.label_ids;
         },
         doHover() {
             this.hover = true;
@@ -89,17 +111,26 @@ export default {
         },
         saveThis() {
             this.tag.name = this.newName;
+            this.tag.value = this.newValue;
             this.tag.color = this.newColor.substr(1);
+            this.tag.label_ids = this.newAllowedLabels;
             this.editing = false;
 
-            if (this.oldName !== this.tag.name || this.oldColor !== this.tag.color) {
+            if (
+                this.oldName !== this.tag.name 
+                || this.oldValue !== this.tag.value 
+                || this.oldColor !== this.tag.color
+                || this.oldAllowedLabels !== this.tag.label_ids
+            ) {
                 this.emitSave(this.tag, () => this.editing = true);
             }
         },
         revertThis() {
             this.editing = false;
             this.tag.name = this.oldName;
+            this.tag.value = this.oldValue;
             this.tag.color = this.oldColor;
+            this.tag.label_ids = this.oldAllowedLabels; 
         },
         deleteThis() {
             this.emitDelete(this.tag);
@@ -112,7 +143,23 @@ export default {
         },
     },
     created() {
-        console.log(randomColor());
+        const labels = biigle.$require('tagsDisplay.labels');
+
+        labels.forEach((label) => {
+            this.labelsOptions.push(
+                {
+                    value: label.id,
+                    label: label.name
+                }
+            )
+        });
     },
 };
 </script>
+
+<style scoped>
+:deep(.dropdown-menu) {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+</style>

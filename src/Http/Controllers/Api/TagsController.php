@@ -15,7 +15,8 @@ class TagsController extends Controller
 {
     public function show()
     {
-        $tags = Tag::all();
+        $tags = Tag::with('group')->get();
+
         return response()->json($tags);
     }
 
@@ -23,59 +24,12 @@ class TagsController extends Controller
     {        
         $tag = new Tag();
         $tag->name = $request->input('name');
+        $tag->value = $request->input('value');
         $tag->color = $request->input('color');
         $tag->save();
+        $tag->labels()->sync($request->input('label_ids', []));
+
         return response()->json($tag, 201);
-    }
-
-    public function annotation($annotation_id)
-    {
-        $tags = Tag::whereHas('annotations', function ($query) use ($annotation_id) {
-            $query->where('image_annotation_id', $annotation_id);
-        })
-        ->get()
-        ->map(function ($tag) use ($annotation_id) {
-            $annotation = $tag->annotations()->where('image_annotation_id', $annotation_id)->first();
-            $tag->pivot = $annotation ? $annotation->pivot->value : null;
-            return $tag;
-        });
-        return response()->json($tags);
-    }
-
-    public function attach(Request $request, $annotation_id)
-    {
-        $tag = Tag::find($request->input('tag_id'));
-        
-        if (!$tag) {
-            return response()->json(['error' => 'Tag not found'], 404);
-        }
-
-        $tag->annotations()->attach($annotation_id, ['value' => null]);
-
-        return response()->json(['message' => 'Tag attached successfully']);
-    }
-
-    public function detach(Request $request, $annotation_id)
-    {
-        $tag = Tag::find($request->input('tag_id'));
-        
-        if (!$tag) {
-            return response()->json(['error' => 'Tag not found'], 404);
-        }
-
-        $tag->annotations()->detach($annotation_id);
-        return response()->json(['message' => 'Tag detached successfully']);
-    }
-
-    public function updateTag(Request $request, $annotation_id)
-    {
-        $tag = Tag::findOrFail($request->input('tag_id'));
-
-        $tag->annotations()->syncWithoutDetaching([
-            $annotation_id => ['value' => $request->input('value')],
-        ]);
-
-        return response()->json(['message' => 'Value updated successfully']);
     }
 
     public function destroy($id)
@@ -94,55 +48,68 @@ class TagsController extends Controller
     {
         $tag = $request->tag;
         $tag->name = $request->input('name', $tag->name);
+        $tag->value = $request->input('value', null);
         $tag->color = $request->input('color', $tag->color);
+        $tag->labels()->sync($request->input('label_ids', []));
 
         $tag->save();
 
         return response()->json($tag);
     }
 
-    public function importTags(TagImport $request) {
-        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-        $file = $request->file(key: 'file');
-        $content = file($file->getRealPath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    public function annotation($annotation_id)
+    {
+        $tags = Tag::whereHas('annotations', function ($query) use ($annotation_id) {
+            $query->where('image_annotation_id', $annotation_id);
+        })
+        ->get();
+        return response()->json($tags);
+    }
 
-        $tags = array_map(function ($line) {
-            $line = trim($line);
-            return filter_var($line, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        }, $content);
+    public function updateRelation(Request $request, $annotation_id)
+    {
+        DB::table('tag_annotations')
+            ->where('image_annotation_id', $annotation_id)
+            ->delete();
 
-        $tags = array_unique($tags);
-        
-        if (empty($tags)) {
-            return response()->json(['message' => 'Nothin to import']);
+        foreach ($request->tags as $tagId) {
+            DB::table('tag_annotations')->insert([
+                'image_annotation_id' => $annotation_id,
+                'tag_id' => $tagId,
+            ]);
         }
 
-        try {
-            DB::transaction(function() use ($tags) {
-                $existing = Tag::whereIn('name', $tags)->pluck('name')->toArray();
+        return response()->json(['message' => 'Relation updated successfully']);
+    }
 
-                $newTags = array_diff($tags, $existing);
+    public function importTags(TagImport $request) {
+        $file = $request->file('file');
 
-                if (empty($newTags)) {
-                    return;
+        $path = $file->getRealPath();
+
+        
+        if (($handle = fopen($path, 'r')) !== false) {
+            $header = null;
+            while(($row = fgetcsv($handle, 1000, ',')) !== false) {
+                dump($row);
+                if (!$header) {
+                    $header = $row;
+                    continue;
                 }
 
-                $now = now();
+                $data = array_combine($header, $row);
+                $data = array_map(fn($v) => $v === '' ? null : $v, $data);
 
-                $insertData = array_map(fn($name) => [
-                    'name' => $name,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                    'color' => $this->randomRgbCode()
-                ], $newTags);
-                
-                Tag::insert($insertData);
-            });
-        } catch (Throwable $e) {
-            return response()->json(['error' => 'Error during tag import'], 500);
+                Tag::updateOrCreate([
+                    'name' => $data['name'],
+                    'value' => $data['value'] ?? null,
+                    'color' => $this->randomRgbCode(),
+                ]);
+            }
+            fclose($handle);
         }
 
-        return response()->json(['message' => 'Import success']);
+        return response()->json(['message' => 'Import successfull']);
     }
 
     private function randomRgbCode(): string {
