@@ -105,8 +105,8 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
                 'tags.value as tag_value',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
-            ->leftJoin('annotations_tags', 'image_annotations.id', '=', 'annotations_tags.image_annotation_id')
-            ->leftJoin('tags', 'annotations_tags.tag_id', '=', 'tags.id')
+            ->leftJoin('tag_annotations', 'image_annotations.id', '=', 'tag_annotations.image_annotation_id')
+            ->leftJoin('tags', 'tag_annotations.tag_id', '=', 'tags.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
