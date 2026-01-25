@@ -16,18 +16,6 @@ export default Resource('api/v1/tags', {}, {
         method: 'POST',
         url: 'api/v1/tags/annotations/{id}',
     },
-    // attachTag: {
-    //     method: 'POST',
-    //     url: 'api/v1/tags/annotation/{id}',
-    // },
-    // detachTag: {
-    //     method: 'DELETE',
-    //     url: 'api/v1/tags/annotation/{id}',
-    // },
-    // updateTag: {
-    //     method: 'PUT',
-    //     url: 'api/v1/tags/annotation/{id}'
-    // },
     importTags: {
         method: 'POST',
         url: 'api/v1/tags/import',

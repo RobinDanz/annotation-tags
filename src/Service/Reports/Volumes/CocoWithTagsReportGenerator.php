@@ -7,8 +7,6 @@ use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\User;
 
-use DB;
-
 class CocoWithTagsReportGenerator extends CocoReportGenerator
 {
     use MakesZipArchives;
@@ -50,8 +48,6 @@ class CocoWithTagsReportGenerator extends CocoReportGenerator
             $annotation->tags = $tagData;
             return $annotation;
         });
-
-        dump($rows);
 
         $toZip = [];
 

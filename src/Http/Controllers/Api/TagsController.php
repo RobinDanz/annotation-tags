@@ -13,7 +13,7 @@ use Throwable;
 
 class TagsController extends Controller
 {
-    public function show()
+    public function index()
     {
         $tags = Tag::with('group')->get();
 
@@ -91,7 +91,6 @@ class TagsController extends Controller
         if (($handle = fopen($path, 'r')) !== false) {
             $header = null;
             while(($row = fgetcsv($handle, 1000, ',')) !== false) {
-                dump($row);
                 if (!$header) {
                     $header = $row;
                     continue;

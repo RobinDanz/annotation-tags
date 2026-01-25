@@ -17,6 +17,7 @@ class TagGroupController extends Controller
     public function index()
     {
         $groups = TagGroup::all();
+
         return response()->json($groups);
     }
 
@@ -27,7 +28,6 @@ class TagGroupController extends Controller
         $group->name = $request->input('name');
 
         $group->save();
-
 
         if (!empty($request->input('tags'))) {
             Tag::whereIn('id', $request->input('tags'))
@@ -40,9 +40,7 @@ class TagGroupController extends Controller
     public function update(UpdateTagGroup $request)
     {
         $group = $request->tagGroup;
-
         $group->name = $request->input('name', $group->name);
-
         $tags = $request->input('tags', $group->tags);
 
         Tag::where('tag_group_id', $group->id)->update(['tag_group_id' => null]);
