@@ -77,7 +77,7 @@ Do not forget to insert a `\` at the end of the line above.
 ### Rebuild and restard the BIIGLE instance
 
 #### !!! DISCLAIMER !!!
-This module applies migrations to the database. Before installing it, you may want to check the [official documentation](https://biigle-admin-documentation.readthedocs.io/maintenance/#updating) on the update procedure before doing this.
+This module applies migrations to the database. Before installing it, you may want to check the [official documentation](https://biigle-admin-documentation.readthedocs.io/maintenance/#updating) on the update procedure before the next steps.
 
 1. Build the containers: `cd build && ./build.sh`
 2. Put the application in maintenance mode: `./artisan down`
